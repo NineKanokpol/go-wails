@@ -80,7 +80,6 @@ onMounted(async () => {
     <div style="margin-bottom:10px;">
       <b>StatusFFFFFFFF:</b> {{ status }}
     </div>
-    <p>Current Version: {{ currentVersion }}</p>
     <button @click="onMainButtonClick" style="padding:10px 14px; margin-right:8px;">
       {{ btnText }}
     </button>
@@ -89,6 +88,6 @@ onMounted(async () => {
       Quit (แล้วเปิดใหม่)
     </button>
 
-    <p style="margin-top:16px;">Output v1.0.1: {{ output }}</p>
+    <p style="margin-top:16px;">Output {{ currentVersion }}: {{ output }}</p>
   </div>
 </template>
