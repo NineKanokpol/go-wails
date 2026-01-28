@@ -64,7 +64,7 @@ onMounted(async () => {
 <template>
   <div style="padding:20px;">
     <div style="margin-bottom:10px;">
-      <b>Status:</b> {{ status }}
+      <b>StatusTTTTTT:</b> {{ status }}
     </div>
 
     <button @click="onMainButtonClick" style="padding:10px 14px; margin-right:8px;">
