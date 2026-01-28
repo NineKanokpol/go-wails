@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 
@@ -226,3 +227,18 @@ func (r *br) Read(p []byte) (int, error) {
 }
 
 func (a *App) Quit() { wruntime.Quit(a.ctx) }
+
+func (a *App) RestartApp() error {
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	cmd := exec.Command(exe)
+	_ = cmd.Start()
+	wruntime.Quit(a.ctx)
+	return nil
+}
+
+func (a *App) GetAppVersion() string {
+	return Version
+}

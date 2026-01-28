@@ -1,29 +1,40 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { CheckUpdate, ApplyUpdate, GetButtonText, SetButtonText, Quit } from "../../wailsjs/go/main/App";
+import { CheckUpdate, ApplyUpdate, GetButtonText, SetButtonText, Quit,GetAppVersion } from "../../wailsjs/go/main/App";
 import { EventsOn } from "../../wailsjs/runtime/runtime"; // ใช้ event จาก Go → JS ได้ :contentReference[oaicite:4]{index=4}
 
-const manifestURL = ref("https://yourdomain.com/myapp/manifest.json");
+const manifestURL = ref("https://github.com/NineKanokpol/go-wails/releases/latest/download/manifest.json");
 
 const btnText = ref("Output");
 const status = ref("");
 const output = ref("");
 const updateInfo = ref(null);
+const currentVersion = ref("");
 
 async function loadButtonText() {
   btnText.value = await GetButtonText(); // เปิดแอปใหม่ก็ยังจำได้ เพราะ Go load state ไว้แล้ว
 }
 
 async function checkUpdateOnStartup() {
-  updateInfo.value = await CheckUpdate(manifestURL.value);
+  // ✅ กัน cache ด้วยการใส่ timestamp
+  const url = `${manifestURL.value}?t=${Date.now()}`;
+  updateInfo.value = await CheckUpdate(url);
+
+  if (updateInfo.value?.error) {
+    status.value = `CheckUpdate error: ${updateInfo.value.error}`;
+    return;
+  }
 
   if (updateInfo.value?.hasUpdate) {
     status.value = `พบอัปเดต: ${updateInfo.value.latest} (ของคุณ ${updateInfo.value.current})`;
-    // เปลี่ยน text ปุ่ม + เซฟลงไฟล์ state
     await SetButtonText("Update available");
     await loadButtonText();
   } else {
-    status.value = "เป็นเวอร์ชันล่าสุดแล้ว";
+    status.value = `เป็นเวอร์ชันล่าสุดแล้ว (current=${updateInfo.value.current}, latest=${updateInfo.value.latest})`;
+
+    // ✅ (แนะนำ) reset ปุ่มกลับเป็น Output ทุกครั้งถ้าไม่มีอัปเดต
+    await SetButtonText("Output");
+    await loadButtonText();
   }
 }
 
@@ -39,6 +50,8 @@ async function onMainButtonClick() {
     if (res.ok) {
       await SetButtonText("Restart app");
       await loadButtonText();
+
+      await RestartApp();
     }
     return;
   }
@@ -52,6 +65,7 @@ async function onRestart() {
 }
 
 onMounted(async () => {
+  currentVersion.value = await GetAppVersion();
   await loadButtonText();
   await checkUpdateOnStartup();
 
@@ -64,9 +78,9 @@ onMounted(async () => {
 <template>
   <div style="padding:20px;">
     <div style="margin-bottom:10px;">
-      <b>StatusTTTTTT:</b> {{ status }}
+      <b>StatusFFFFFFFF:</b> {{ status }}
     </div>
-
+    <p>Current Version: {{ currentVersion }}</p>
     <button @click="onMainButtonClick" style="padding:10px 14px; margin-right:8px;">
       {{ btnText }}
     </button>
@@ -75,6 +89,6 @@ onMounted(async () => {
       Quit (แล้วเปิดใหม่)
     </button>
 
-    <p style="margin-top:16px;">Output: {{ output }}</p>
+    <p style="margin-top:16px;">Output v1.0.1: {{ output }}</p>
   </div>
 </template>
