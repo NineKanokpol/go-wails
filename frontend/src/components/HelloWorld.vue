@@ -68,7 +68,9 @@ onMounted(async () => {
   currentVersion.value = await GetAppVersion();
   await loadButtonText();
   await checkUpdateOnStartup();
-
+  setInterval(() => {
+    checkUpdateOnStartup();
+  }, 5 * 60 * 1000);
   EventsOn("update:applied", async () => {
     // ถ้าต้องการทำอะไรเพิ่มหลัง apply
   });
