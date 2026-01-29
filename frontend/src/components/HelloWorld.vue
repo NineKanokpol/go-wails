@@ -80,7 +80,7 @@ onMounted(async () => {
 <template>
   <div style="padding:20px;">
     <div style="margin-bottom:10px;">
-      <b>StatusFFFFFFFF:</b> {{ status }}
+      <b>StatusVersion 5 min:</b> {{ status }}
     </div>
     <button @click="onMainButtonClick" style="padding:10px 14px; margin-right:8px;">
       {{ btnText }}
